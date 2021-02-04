@@ -1,0 +1,44 @@
+---
+title: "Hoehl_Anton_AssignmentV"
+author: "Submitted by Anton Höhl (Student ID: 5637078)"
+date: "04/02/2021"
+output: 
+  html_document:
+    toc: true
+---
+
+<style>
+body {
+text-align: justify}
+</style>
+
+```{r echo=FALSE, include=FALSE}
+install.packages("textreadr")
+
+
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(knitr)
+library(textreadr)
+```
+
+## 0. Structure 
+
+I (Anton Höhl Student ID: 5637078) worked together with Lana Kern (Student ID: 5395819), Michael Lyubkin (Student ID: 4168485), Jingwen Xu (Student ID: 5631584) and Martin Scheerer (Student ID: 5631373). I hereby confirm that my submission is in line with the "Code of Conduct" outlined on the lecture slides. While solving the Assignment each task will be shortly explained after solving it and if feasable an excerpt of the resulting data set is printed. Furthermore smaller steps will be explained in the code snippets as smaller comments to clarifiy the solution approach.  
+
+
+## 1. Setting up a new GitHub repository
+
+### The repository on Github can be found under the following Link: 
+https://github.com/Anton-Hoehl/DSPM-Assignment.git
+
+
+2. Getting to know the API
+
+```{r API}
+
+API_key <- read_rtf("API_key.rtf")
+
+```
+
