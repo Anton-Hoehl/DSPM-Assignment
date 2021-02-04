@@ -1,0 +1,10 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+# ignore the API_key.txt
+API_key.txt
+
+# ignore files automatically created by the finder on macos 
+*.DS_Store
