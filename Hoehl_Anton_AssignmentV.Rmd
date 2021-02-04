@@ -14,13 +14,16 @@ text-align: justify}
 
 ```{r echo=FALSE, include=FALSE}
 install.packages("textreadr")
-
+install.packages("rlist")
 
 library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(knitr)
 library(textreadr)
+library(httr)
+library(rlist)
+library(jsonlite)
 ```
 
 ## 0. Structure 
@@ -34,11 +37,34 @@ I (Anton Höhl Student ID: 5637078) worked together with Lana Kern (Student ID: 
 https://github.com/Anton-Hoehl/DSPM-Assignment.git
 
 
-2. Getting to know the API
+## 2. Getting to know the API
 
 ```{r API}
-
+# read the api key from the rtf file
 API_key <- read_rtf("API_key.rtf")
 
 ```
 
+
+## 3. Interacting with the API - the basics
+
+```{r API requests}
+# create the request string
+req_string <- paste("https://app.ticketmaster.com/discovery/v2/events?apikey=",
+                    API_key,
+                    "&locale=*&countryCode=DE", sep = "")
+
+# get the request
+response <- GET(url = req_string)
+```
+
+
+```{r API requests}
+
+# extract the contents
+json <- content(x = response, as = "text" )
+
+# convert from json to R object
+r_obj <- fromJSON(json)
+
+```
