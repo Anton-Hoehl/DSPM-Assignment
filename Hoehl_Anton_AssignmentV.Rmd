@@ -187,6 +187,94 @@ ggplot( ) +
   theme(title = element_text(size=8, face='bold'),
         plot.caption = element_text(face = "italic"))
 
+```
 
+## 6. Event locations in other countries
+
+```{r all_venues}
+# for loop which iterates over all pages 
+all_venues <- data.frame()
+
+for (page in c(0:39)){
+
+  # create new request string
+  req_string <- paste("https://app.ticketmaster.com/discovery/v2/venues?apikey="
+                      ,API_key,
+                      "&locale=*&size=500&page=", 
+                      page ,
+                      "&countryCode=FR",
+                      sep = "")
+
+  # get the new request
+  response <- GET(url = req_string)
+
+  json <- content(x = response, as = "text" )
+  
+  # convert from json to R object
+  r_obj <- fromJSON(json)
+  
+  venues <- r_obj$`_embedded`$venues
+  
+  # select relevant columns and clean the frame 
+  
+  # set up df for the page frome the GET order
+  venues_data <- setNames(
+                    data.frame(
+                      matrix(ncol = 7, nrow = length(venues$name))), 
+                      c("name", "url","postalCode", "longitude",
+                        "latitude", "city", "address"))
+      
+  venues_data$name <- venues$name
+  venues_data$url <- venues$url
+  venues_data$postalCode <- venues$postalCode
+  venues_data$longitude <- as.double(venues$location$longitude)
+  venues_data$latitude <- as.double(venues$location$latitude)
+  venues_data$city <- venues$city$name
+  venues_data$address <- venues$address$line1
+  
+  # add the new requested rows
+  all_venues <- rbind(all_venues, venues_data)
+  
+  Sys.sleep(4)
+}
+
+
+# checking NAs
+test <- all_venues[c("longitude", "latitude")]
+test <- test[rowSums(is.na(test)) > 0,]
+
+summary(test$latitude)
+summary(test$longitude)
+
+# copy venue set
+mod_venues <- all_venues
+
+# cut off  locations unlikely in Germany
+mod_venues$long <- ifelse(between(mod_venues$longitude, -4.783333, 8.216667), 
+                          mod_venues$longitude, 
+                          NA)
+
+mod_venues$lat <- ifelse(between(mod_venues$latitude, 42.333333, 51.083333), 
+                          mod_venues$latitude, 
+                          NA)
+
+
+# plot the German map including the venue locations
+ggplot( ) + 
+  geom_polygon(
+        aes(x = long, y = lat, group = group), 
+        data = map_data("world", region = "France"),
+        fill = "grey90",color = "black") +
+  theme_void() + 
+  coord_quickmap() +
+  geom_point(data = mod_venues, aes(x = long, y = lat), size = 0.5) +
+  labs(title = "Event locations across France", 
+       caption = "Source: ticketmaster.com") + 
+  theme(title = element_text(size=8, face='bold'),
+        plot.caption = element_text(face = "italic"))
 
 ```
+
+
+
+
