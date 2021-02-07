@@ -170,3 +170,23 @@ mod_venues$lat <- ifelse(between(mod_venues$latitude, 47.271679, 55.0846),
 
 
 
+
+```{r Map}
+
+# plot the German map including the venue locations
+ggplot( ) + 
+  geom_polygon(
+        aes(x = long, y = lat, group = group), 
+        data = map_data("world", region = "Germany"),
+        fill = "grey90",color = "black") +
+  theme_void() + 
+  coord_quickmap() +
+  geom_point(data = mod_venues, aes(x = long, y = lat), size = 0.5) +
+  labs(title = "Event locations across Germany", 
+       caption = "Source: ticketmaster.com") + 
+  theme(title = element_text(size=8, face='bold'),
+        plot.caption = element_text(face = "italic"))
+
+
+
+```
