@@ -90,7 +90,56 @@ venues_data$address <- venues$address$line1
 kable(venues_data, format = "html")
 ```
 
+## 4. Interacting with the API - advanced
 
+```{r all_venues}
+# for loop which iterates over all pages 
+all_venues <- data.frame()
+
+for (page in c(0:25)){
+
+  # create new request string
+  req_string <- paste("https://app.ticketmaster.com/discovery/v2/venues?apikey="
+                      ,API_key,
+                      "&locale=*&size=500&page=", 
+                      page ,
+                      "&countryCode=DE",
+                      sep = "")
+
+  # get the new request
+  response <- GET(url = req_string)
+
+  json <- content(x = response, as = "text" )
+  
+  # convert from json to R object
+  r_obj <- fromJSON(json)
+  
+  venues <- r_obj$`_embedded`$venues
+  
+  # select relevant columns and clean the frame 
+  
+  # set up df for the page frome the GET order
+  venues_data <- setNames(
+                    data.frame(
+                      matrix(ncol = 7, nrow = length(venues$name))), 
+                      c("name", "url","postalCode", "longitude",
+                        "latitude", "city", "address"))
+      
+  venues_data$name <- venues$name
+  venues_data$url <- venues$url
+  venues_data$postalCode <- venues$postalCode
+  venues_data$longitude <- as.double(venues$location$longitude)
+  venues_data$latitude <- as.double(venues$location$latitude)
+  venues_data$city <- venues$city$name
+  venues_data$address <- venues$address$line1
+  
+  # add the new requested rows
+  all_venues <- rbind(all_venues, venues_data)
+  
+  Sys.sleep(4)
+}
+
+```
 
 
 
