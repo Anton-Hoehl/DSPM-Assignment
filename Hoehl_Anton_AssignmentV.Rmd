@@ -142,5 +142,31 @@ for (page in c(0:25)){
 ```
 
 
+## 5. Visualizing the extracted data
+
+```{r Coordinate preparation}
+
+# checking NAs
+test <- all_venues[c("longitude", "latitude")]
+test <- test[rowSums(is.na(test)) > 0,]
+
+summary(test$latitude)
+summary(test$longitude)
+
+# copy venue set
+mod_venues <- all_venues
+
+# cut off  locations unlikely in Germany
+mod_venues$long <- ifelse(between(mod_venues$longitude, 5.866944, 15.043611), 
+                          mod_venues$longitude, 
+                          NA)
+
+mod_venues$lat <- ifelse(between(mod_venues$latitude, 47.271679, 55.0846), 
+                          mod_venues$latitude, 
+                          NA)
+
+
+```
+
 
 
