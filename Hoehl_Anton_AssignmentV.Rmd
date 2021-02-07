@@ -13,8 +13,6 @@ text-align: justify}
 </style>
 
 ```{r echo=FALSE, include=FALSE}
-install.packages("textreadr")
-install.packages("rlist")
 
 library(tidyr)
 library(dplyr)
@@ -24,6 +22,7 @@ library(textreadr)
 library(httr)
 library(rlist)
 library(jsonlite)
+library(maps)
 ```
 
 ## 0. Structure 
@@ -59,7 +58,7 @@ response <- GET(url = req_string)
 ```
 
 
-```{r API requests}
+```{r contents}
 
 # extract the contents
 json <- content(x = response, as = "text" )
@@ -67,4 +66,32 @@ json <- content(x = response, as = "text" )
 # convert from json to R object
 r_obj <- fromJSON(json)
 
+# retrive the venues from the object
+venues <- as.data.frame(bind_rows(r_obj$`_embedded`$events$`_embedded`$venues,
+                    .id = "column_label"))
+
+# create empty df for the needed variables
+venues_data <- setNames(
+                  data.frame(
+                    matrix(ncol = 7, nrow = length(venues$name))), 
+                    c("name", "url","postalCode", "longitude",
+                      "latitude", "city", "address"))
+
+# select columns from the venues set   
+venues_data$name <- venues$name
+venues_data$url <- venues$url
+venues_data$postalCode <- venues$postalCode
+venues_data$longitude <- as.double(venues$location$longitude)
+venues_data$latitude <- as.double(venues$location$latitude)
+venues_data$city <- venues$city$name
+venues_data$address <- venues$address$line1
+
+# display the results
+kable(venues_data, format = "html")
 ```
+
+
+
+
+
+
