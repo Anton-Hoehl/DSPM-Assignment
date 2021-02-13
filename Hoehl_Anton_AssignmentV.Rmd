@@ -72,7 +72,7 @@ response <- GET(url = req_string)
 
 After receiving the response object the contents are extracted and read as a json file. The venues data can then be extracted from the resulting r object.
 
-```{r contents, echo=FALSE}
+```{r contents}
 
 # extract the contents
 json <- content(x = response, as = "text" )
@@ -102,7 +102,7 @@ venues_data$address <- venues$address$line1
 
 The resulting data frame looks as follows: 
 
-```{r display}
+```{r display, echo=FALSE}
 # display the results
 kable(venues_data, format = "html")
 ```
@@ -197,7 +197,7 @@ mod_venues$lat <- ifelse(between(mod_venues$latitude, 47.271679, 55.0846),
 
 Afterwards the data points can be incroporated in the german map. 
 
-```{r Map}
+```{r Map, warning=FALSE}
 
 # plot the German map including the venue locations
 ggplot( ) + 
@@ -226,7 +226,7 @@ To create the same map for a different country only 4 elements had to be changed
 
 The following plot shows the resulting map for France.
 
-```{r France, echo=FALSE}
+```{r France, echo=FALSE, warning=FALSE}
 # for loop which iterates over all pages 
 all_venues <- data.frame()
 
