@@ -13,12 +13,19 @@ text-align: justify}
 </style>
 
 ```{r echo=FALSE, include=FALSE}
+if (!require("tidyr")) install.packages("tidyr")
+if (!require("dplyr")) install.packages("dplyr")
+if (!require("ggplot2")) install.packages("ggplot2")
+if (!require("knitr")) install.packages("knitr")
+if (!require("httr")) install.packages("httr")
+if (!require("rlist")) install.packages("rlist")
+if (!require("jsonlite")) install.packages("jsonlite")
+if (!require("maps")) install.packages("maps")
 
 library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(knitr)
-library(textreadr)
 library(httr)
 library(rlist)
 library(jsonlite)
@@ -27,18 +34,18 @@ library(maps)
 
 ## 0. Structure 
 
-I (Anton Höhl Student ID: 5637078) worked together with Lana Kern (Student ID: 5395819), Michael Lyubkin (Student ID: 4168485), Jingwen Xu (Student ID: 5631584) and Martin Scheerer (Student ID: 5631373). I hereby confirm that my submission is in line with the "Code of Conduct" outlined on the lecture slides. While solving the Assignment each task will be shortly explained and if feasable an excerpt of the resulting data set is printed. Furthermore smaller steps will be explained in the code snippets as smaller comments to clarifiy the solution approach.  
+I (Anton Höhl Student ID: 5637078) worked together with Lana Kern (Student ID: 5395819), Michael Lyubkin (Student ID: 4168485), Jingwen Xu (Student ID: 5631584), Simon Metzger (Student ID: 5635087) and Martin Scheerer (Student ID: 5631373). I hereby confirm that my submission is in line with the "Code of Conduct" outlined on the lecture slides. While solving the Assignment each task will be shortly explained and if feasable an excerpt of the resulting data set is printed. Furthermore smaller steps will be explained in the code snippets as smaller comments to clarifiy the solution approach.  
 
 
 ## 1. Setting up a new GitHub repository
 
-### The repository on Github can be found under the following Link: 
+The repository on Github can be found under the following Link: 
 https://github.com/Anton-Hoehl/DSPM-Assignment.git
 
 
 ## 2. Getting to know the API
 
-The API key is store in a seperate R file to protect it from unauthorized access. The file containing the key is also not submitted to github to protect it. 
+The API key is store in a seperate R file to protect it from unauthorized access. The file containing the key is also not submitted to github to protect it. This is specified in the gitignore file
 
 ```{r API}
 # read the api key from the R script
@@ -102,7 +109,7 @@ kable(venues_data, format = "html")
 
 ## 4. Interacting with the API - advanced
 
-To download all of the venue data on the ticketmaster page we need to iterate over all of the pages containing the information. The following for loop does exactly that and merges the results of each request. Checking on the website shows that we should have exactly 12238 entries as of the 11.02.2021. A conservative request rate with  4 second breaks between requests has been set.
+To download all of the venue data on the ticketmaster page we need to iterate over all of the pages containing the information. The following for loop does exactly that and merges the results of each request. Checking on the website shows that we should have exactly 12238 entries as of the 11.02.2021. A conservative request rate with  2 second breaks between requests has been set.
 
 ```{r all_venues}
 # for loop which iterates over all pages 
@@ -148,7 +155,7 @@ for (page in c(0:25)){
   # add the new requested rows
   all_venues <- rbind(all_venues, venues_data)
   
-  Sys.sleep(4)
+  Sys.sleep(2)
 }
 
 ```
@@ -217,7 +224,7 @@ To create the same map for a different country only 4 elements had to be changed
 3. the cutoff points for countries taken from Wikipedia
 4. The region in the country plot has to be adjusted
 
-The following plot shows the results for France.
+The following plot shows the resulting map for France.
 
 ```{r France, echo=FALSE}
 # for loop which iterates over all pages 
@@ -263,21 +270,13 @@ for (page in c(0:39)){
   # add the new requested rows
   all_venues <- rbind(all_venues, venues_data)
   
-  Sys.sleep(4)
+  Sys.sleep(2)
 }
-
-
-# checking NAs
-test <- all_venues[c("longitude", "latitude")]
-test <- test[rowSums(is.na(test)) > 0,]
-
-summary(test$latitude)
-summary(test$longitude)
 
 # copy venue set
 mod_venues <- all_venues
 
-# cut off  locations unlikely in Germany
+# cut off  locations unlikely in France
 mod_venues$long <- ifelse(between(mod_venues$longitude, -4.783333, 8.216667), 
                           mod_venues$longitude, 
                           NA)
@@ -287,7 +286,7 @@ mod_venues$lat <- ifelse(between(mod_venues$latitude, 42.333333, 51.083333),
                           NA)
 
 
-# plot the German map including the venue locations
+# plot the French map including the venue locations
 ggplot( ) + 
   geom_polygon(
         aes(x = long, y = lat, group = group), 
