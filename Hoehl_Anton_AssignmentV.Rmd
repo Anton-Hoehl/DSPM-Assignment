@@ -27,7 +27,7 @@ library(maps)
 
 ## 0. Structure 
 
-I (Anton Höhl Student ID: 5637078) worked together with Lana Kern (Student ID: 5395819), Michael Lyubkin (Student ID: 4168485), Jingwen Xu (Student ID: 5631584) and Martin Scheerer (Student ID: 5631373). I hereby confirm that my submission is in line with the "Code of Conduct" outlined on the lecture slides. While solving the Assignment each task will be shortly explained after solving it and if feasable an excerpt of the resulting data set is printed. Furthermore smaller steps will be explained in the code snippets as smaller comments to clarifiy the solution approach.  
+I (Anton Höhl Student ID: 5637078) worked together with Lana Kern (Student ID: 5395819), Michael Lyubkin (Student ID: 4168485), Jingwen Xu (Student ID: 5631584) and Martin Scheerer (Student ID: 5631373). I hereby confirm that my submission is in line with the "Code of Conduct" outlined on the lecture slides. While solving the Assignment each task will be shortly explained and if feasable an excerpt of the resulting data set is printed. Furthermore smaller steps will be explained in the code snippets as smaller comments to clarifiy the solution approach.  
 
 
 ## 1. Setting up a new GitHub repository
@@ -38,11 +38,12 @@ https://github.com/Anton-Hoehl/DSPM-Assignment.git
 
 ## 2. Getting to know the API
 
-The API key is store in a seperate textfile to protect it from unauthorized access. The file containing the key is also not submitted to github to protect it. 
+The API key is store in a seperate R file to protect it from unauthorized access. The file containing the key is also not submitted to github to protect it. 
 
 ```{r API}
-# read the api key from the rtf file
-API_key <- read_rtf("API_key.rtf")
+# read the api key from the R script
+source("API_key.R")
+
 
 ```
 
@@ -53,9 +54,10 @@ First I used the explanations on the ticketmaster website to create the required
 
 ```{r API requests}
 # create the request string
-req_string <- paste("https://app.ticketmaster.com/discovery/v2/events?apikey=",
-                    API_key,
-                    "&locale=*&countryCode=DE", sep = "")
+req_string <- paste("https://app.ticketmaster.com/discovery/v2/venues?apikey="
+                      ,API_key,
+                      "&locale=*&countryCode=DE",
+                      sep = "")
 
 # get the request
 response <- GET(url = req_string)
@@ -72,8 +74,7 @@ json <- content(x = response, as = "text" )
 r_obj <- fromJSON(json)
 
 # retrive the venues from the object
-venues <- as.data.frame(bind_rows(r_obj$`_embedded`$events$`_embedded`$venues,
-                    .id = "column_label"))
+venues <- r_obj$`_embedded`$venues
 
 # create empty df for the needed variables
 venues_data <- setNames(
@@ -149,6 +150,7 @@ for (page in c(0:25)){
   
   Sys.sleep(4)
 }
+
 ```
 
 We can take a look at the dimensions of the resulting set to ensure that every entry has been taken. 
@@ -217,7 +219,7 @@ To create the same map for a different country only 4 elements had to be changed
 
 The following plot shows the results for France.
 
-```{r France}
+```{r France, echo=FALSE}
 # for loop which iterates over all pages 
 all_venues <- data.frame()
 
