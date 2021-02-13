@@ -4,7 +4,7 @@
 .Ruserdata
 
 # ignore the API_key.txt
-API_key.rtf
+API_key.R
 
 # ignore files automatically created by the finder on macos 
 *.DS_Store
